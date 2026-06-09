@@ -55,7 +55,7 @@ POROSITIES = {
 }
 
 # Reference network paths (saved by 0005b alongside the .raw files)
-DATA_DIR = '/home/ubuntu/repos/PoreGen/saveddata/raw/imperial_college/'
+DATA_DIR = '/home/ubuntu/repos/DiffSci2/saveddata/raw/imperial_college/'
 REFERENCE_NETWORK_PATHS = {
     'Bentheimer': DATA_DIR + 'Bentheimer_1000c_3p0035um.network.npz',
     'Doddington': DATA_DIR + 'Doddington_1000c_2p6929um.network.npz',

@@ -46,7 +46,7 @@ VOXEL_LENGTHS = {
 }
 
 # Reference volume paths
-DATA_DIR = '/home/ubuntu/repos/PoreGen/saveddata/raw/imperial_college/'
+DATA_DIR = '/home/ubuntu/repos/DiffSci2/saveddata/raw/imperial_college/'
 REFERENCE_PATHS = {
     'Bentheimer': DATA_DIR + 'Bentheimer_1000c_3p0035um.raw',
     'Doddington': DATA_DIR + 'Doddington_1000c_2p6929um.raw',

@@ -71,7 +71,7 @@ class UnconditionalWrapper(Dataset):
 # =============================================================================
 # DATA PATHS
 # =============================================================================
-DATA_DIR = '/home/ubuntu/repos/PoreGen/saveddata/raw/imperial_college/'
+DATA_DIR = '/home/ubuntu/repos/DiffSci2/saveddata/raw/imperial_college/'
 VOLUME_PATHS = {
     'Bentheimer': DATA_DIR + 'Bentheimer_1000c_3p0035um.raw',
     'Estaillades': DATA_DIR + 'Estaillades_1000c_3p31136um.raw',
