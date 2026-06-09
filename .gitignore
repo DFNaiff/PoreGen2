@@ -89,6 +89,13 @@ saveddata/processed/*
 saveddata/raw/*
 saveddata/savedsamples/*
 saveddata/MNIST/*
+# thesis data migration: large symlink farms into /opt/persistence2 (machine-specific)
+saveddata/generated/*
+saveddata/archive/*
+saveddata/gp_training/*
+
+# AI-as-researchers playground (promoted from notebooks/exploratory/dfnai/scripts)
+aiplayground/
 
 # output data
 outputdata/*

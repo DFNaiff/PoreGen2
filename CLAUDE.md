@@ -29,20 +29,29 @@ These local files are **curated derivatives** of broader project governance and 
 
 ### Git
 
-Do **not** perform any git operations unless explicitly asked by the developer.
+During refactoring work, Claude **may** run read-only and local git
+operations without asking first:
 
-This includes, but is not limited to:
+- `git status`, `git diff`, `git log`, `git show`
+- `git add`, `git commit`
+- `git branch`, `git switch`, `git checkout`, `git restore`, `git stash`
+- `git fetch`, `git pull`, `git merge`, `git rebase`
 
-- `git add`
-- `git commit`
-- `git push`
-- `git pull`
-- `git checkout`
-- `git switch`
-- branch creation
-- merge / rebase / reset / cherry-pick / stash
+Claude should prefer working on a feature branch rather than committing
+directly to `dev` or `main`.
 
-The developer manages version control manually.
+Claude must **never** perform history-rewriting or destructive git
+operations — these remain blocked at the permission layer and must not be
+attempted:
+
+- `git push --force` / `-f` / `--force-with-lease`, branch/tag deletion on remote
+- `git reset --hard`, `git clean -f*`
+- `git branch -D`, `git tag -d`, `git stash drop`/`clear`
+- `git checkout .`, `git restore .`, `git filter-branch`, `git filter-repo`
+
+**`git push` is not auto-approved** — Claude should ask before pushing,
+since it is outward-facing. The developer otherwise still owns release-level
+version control decisions.
 
 ### Command execution
 

@@ -16,13 +16,12 @@ import sys
 
 
 # --- poreregressor bootstrap ---------------------------------------------
-# The reward regressor lives under
-# `notebooks/exploratory/dfnai/scripts/poreregressor/`. Add the parent
-# directory to sys.path so `import poreregressor` works regardless of
+# The reward regressor lives under `aiplayground/poreregressor/`. Add the
+# parent directory to sys.path so `import poreregressor` works regardless of
 # where the calling script lives.
 
 _POREREGRESSOR_PARENT = (
-    "/home/ubuntu/repos/DiffSci2/notebooks/exploratory/dfnai/scripts"
+    "/home/ubuntu/repos/DiffSci2/aiplayground"
 )
 if _POREREGRESSOR_PARENT not in sys.path:
     sys.path.insert(0, _POREREGRESSOR_PARENT)

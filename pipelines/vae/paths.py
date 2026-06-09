@@ -12,15 +12,15 @@ import os
 
 # Where training-run checkpoints + logs go (overridable via CLI).
 CKPT_DIR = (
-    "/home/ubuntu/repos/DiffSci2/notebooks/exploratory/dfnai/scripts/"
+    "/home/ubuntu/repos/DiffSci2/aiplayground/"
     "vaeporesft/checkpoints"
 )
 LOG_DIR = (
-    "/home/ubuntu/repos/DiffSci2/notebooks/exploratory/dfnai/scripts/"
+    "/home/ubuntu/repos/DiffSci2/aiplayground/"
     "vaeporesft/logs"
 )
 PLOT_DIR = (
-    "/home/ubuntu/repos/DiffSci2/notebooks/exploratory/dfnai/scripts/"
+    "/home/ubuntu/repos/DiffSci2/aiplayground/"
     "vaeporesft/plots"
 )
 
