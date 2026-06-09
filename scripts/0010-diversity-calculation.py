@@ -197,7 +197,7 @@ def compute_subblock_permeability(volume, block_size, stride, n_blocks, voxel_si
                     if use_cached_networks and net_path and os.path.exists(net_path):
                         network = dict(np.load(net_path))
                     else:
-                        from poregen.features.snow2 import snow2
+                        from diffsci2.extra.pore.snow2 import snow2
                         x0 = i * stride
                         y0 = j * stride
                         z0 = k * stride

@@ -12,9 +12,13 @@ permeability, capillary pressure, two-point correlation / pore-size
 distribution, and an oil-water Buckley-Leverett flow analysis.
 
 The installable Python package is **`diffsci2`** (`setup.py`, `name='diffsci2'`).
-The four reference rocks are the Imperial College set: **Bentheimer,
-Doddington, Estaillades, Ketton** (1000³ uint8 `.raw`), supplied by the sibling
-repo **PoreGen**.
+The four reference rocks — **Bentheimer** & **Doddington** (sandstones),
+**Estaillades** & **Ketton** (carbonates) — are the public **Imperial College
+pore-scale modelling micro-CT dataset** (2015 release, 1000³ at
+3.0035 / 2.6929 / 3.31136 / 3.00006 µm), available from
+[Imperial College's pore-scale modelling group](https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/micro-ct-images-and-networks/).
+The helper `scripts/download_imperial_rocks.py` fetches them into
+`saveddata/raw/imperial_college/`.
 
 > **Note on this README.** It replaces the old cookiecutter boilerplate (which
 > referenced a nonexistent `diffsci` package and `make data`/`make train`
@@ -23,11 +27,50 @@ repo **PoreGen**.
 
 ---
 
+## DiffSci2 as a general diffusion framework
+
+Although this repository was built for — and validated on — porous rock, the
+`diffsci2` package is a **general-purpose diffusion-model library**; the rock
+application is one instantiation of a domain-agnostic core. Grounded in the code:
+
+- **Diffusion formulations** — EDM / Karras sigma-space diffusion and a
+  stochastic-interpolant / flow-matching core with pluggable interpolants
+  (linear, cosine, EDM), plus VAE latent diffusion (`diffsci2/models/karras/`,
+  `diffsci2/models/vae/`), all wired as PyTorch-Lightning modules for multi-GPU
+  training.
+- **Backbones** — a configurable 1D/2D/3D U-Net (`PUNetG`), ADM, a VAE
+  encoder/decoder (`VAENet`, incl. PixelNorm / magnitude-preserving variants), a
+  diffusion transformer, and a local-attention (NATTEN) backbone with optional
+  circular/periodic boundaries for seamless tiling (`diffsci2/nets/`).
+- **Samplers & guidance** — Heun / probability-flow ODE integration,
+  classifier-free guidance, MCMC posterior samplers (ULA, MALA, BAOAB/HMC), and
+  inpainting / sequential-inpainting (DPS-style) conditional generation
+  (`diffsci2/models/karras/`, `diffsci2/extra/`).
+- **Conditioning** — scalar, vector, field/spatial (FiLM) and function embedders
+  with composite multi-modal conditioning (`diffsci2/nets/embedder.py`,
+  `enhanced_conditioning.py`) — none of it rock-specific.
+- **Generic data** — `VolumeSubvolumeDataset` loads arbitrary 2D/3D arrays with a
+  pluggable conditioning `extractor` and discrete-symmetry augmentation; toy
+  analytical datasets for algorithm validation (`diffsci2/data/`). The package has
+  already been exercised on non-rock data (MNIST; the `0001-drosophila-*` scripts).
+- **Scaling** — spatial/domain parallelism (`diffsci2/distributed/`) plus chunked
+  VAE decode (`diffsci2/extra/chunk_decode*.py`) let a model trained on small
+  subvolumes generate volumes far larger than fit in memory (here 1024³ slabs and
+  1024²×4096).
+
+**Domain-specific** (not reusable as-is): the pore-network physics and rock
+metrics in `diffsci2/extra/pore/` (SNOW2, PNM permeability, Corey/Brooks-Corey,
+Buckley-Leverett — vendored from the former `poregen` dependency), porosity-field
+conditioning (`diffsci2/extra/porosity_map.py`, Matérn-GP fields), and the VAE
+morphology fine-tune reward in `diffsci2/vaesft/`.
+
+---
+
 ## End-to-end pipeline
 
 ```
 RAW rock volumes (Imperial College: Bentheimer, Doddington, Estaillades, Ketton)
-   |  (sibling repo ~/repos/PoreGen/saveddata/raw/imperial_college/*.raw, uint8 1000^3)
+   |  (Imperial College micro-CT dataset → saveddata/raw/imperial_college/*.raw, uint8 1000^3)
    v
 GP porosity-field training data  ──  gpdata4-129 (window 129) / gpdata4-257 (window 257)
    |     (per-stone *_porosity_field_full.npy, 1000^3 float64; + *_porosity_analysis.npz Matern params)
@@ -72,7 +115,7 @@ stable API**.
 | `notebooks/exploratory/dfn/` | no | Thesis analysis notebooks + `tolatex/` figure scripts. **Pre-migration / unmaintained** — see `notebooks/exploratory/dfn/README_STALE.md`. |
 | `notebooks/exploratory/dfnai/` | no | "AI-as-researchers" subprojects (poreregressor, vaeporesft, …) — being promoted to a top-level gitignored `aiplayground/` (report 05). |
 | `notebooks/exploratory/lysm/` | no | Léo's multi-front workspace (self-documenting `context/` + `docs/`). |
-| `saveddata/` | no (gitignored) | Data symlink farm (`raw/` → PoreGen; the new canonical `gp_training/`, `generated/`, `metrics/`, `archive/` layout — see `docs/ARTIFACTS_AND_DATA.md`). |
+| `saveddata/` | no (gitignored) | Data symlink farm (`raw/imperial_college/` the downloaded rocks; the new canonical `gp_training/`, `generated/`, `metrics/`, `archive/` layout — see `docs/ARTIFACTS_AND_DATA.md`). |
 | `savedmodels/` | no (gitignored) | Checkpoint store: `experimental/` (historical dated runs), `pore/production/` (frozen VAEs + per-stone scalar ckpts), `pore/field_controlled/` (production field-controlled ckpts + preserved GP fields). |
 
 ---
@@ -82,7 +125,8 @@ stable API**.
 - **Conda env:** `ddpm_env` (Linux / Ubuntu; remote dev via VSCode Remote SSH is typical).
 - **Install:** the package is `diffsci2`; install editable from repo root (`pip install -e .`) so `import diffsci2` resolves regardless of CWD.
 - **GPUs:** scripts take literal physical GPU indices (no `CUDA_VISIBLE_DEVICES`); e.g. `--devices 1,2,3,4,5,6` binds GPUs 1–6. Multi-GPU generation uses `torchrun` for spatial-parallel latent sampling. **Avoid GPU 7 unless explicitly told otherwise.** Long jobs should run inside `screen`.
-- **External coupling:** the sibling repo **PoreGen** (`~/repos/PoreGen`) supplies the raw `.raw` volumes and the SNOW2 pore-network extractor (`poregen.features.snow2`); it must be on `PYTHONPATH` whenever SNOW2 actually runs. OpenPNM is the underlying PNM flow engine.
+- **Raw data:** the Imperial College micro-CT rocks (see top of this README); `scripts/download_imperial_rocks.py` places them under `saveddata/raw/imperial_college/`. NOTE: several legacy scripts still hardcode an old `~/repos/PoreGen/saveddata/raw/imperial_college/` `DATA_DIR` — repoint it to `saveddata/raw/imperial_college/` (a known cleanup item).
+- **PNM engine:** pore-network extraction (SNOW2) and PNM permeability are now **vendored into `diffsci2.extra.pore`** (ported from the former `poregen` dependency — see `claude/plan/poregen-port/`), so `poregen` is no longer required on `PYTHONPATH`. **OpenPNM** remains the underlying flow solver.
 - **No seeding.** None of the pipeline scripts seed torch/numpy/Lightning, so every run is non-deterministic.
 
 ---

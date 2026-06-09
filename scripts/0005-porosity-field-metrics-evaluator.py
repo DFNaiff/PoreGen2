@@ -28,7 +28,7 @@ import time
 import numpy as np
 import torch
 
-import poregen.features
+from diffsci2.extra.pore import feature_extractors
 
 
 # Voxel lengths for different stones (in meters)
@@ -258,14 +258,14 @@ def main():
         print(f"Border crop: {args.border_crop}")
 
     # Create extractor
-    porosity_extractor = poregen.features.feature_extractors.PorosityExtractor()
+    porosity_extractor = feature_extractors.PorosityExtractor()
     if args.skip_permeability:
         extractor = porosity_extractor
     else:
-        permeability_extractor = poregen.features.feature_extractors.PermeabilityExtractor(
+        permeability_extractor = feature_extractors.PermeabilityExtractor(
             voxel_length=voxel_length, type_pnm=2
         )
-        extractor = poregen.features.feature_extractors.CompositeExtractor(
+        extractor = feature_extractors.CompositeExtractor(
             [porosity_extractor, permeability_extractor]
         )
 

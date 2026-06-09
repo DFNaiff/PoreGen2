@@ -29,7 +29,7 @@ import time
 
 import numpy as np
 
-from poregen.features.snow2 import snow2
+from diffsci2.extra.pore.snow2 import snow2
 from diffsci2.extra.pore.permeability_from_pnm import PoreNetworkPermeability
 
 

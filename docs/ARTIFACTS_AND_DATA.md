@@ -10,10 +10,10 @@ the **new canonical `saveddata/` layout** being created in parallel.
   is a single symlink → `/opt/persistence2/stonedata` (~377 GB on a second
   volume). The repo holds symlinks, not bytes.
 - `saveddata/` follows the same "symlink farm" convention: `saveddata/raw/`
-  already symlinks into the sibling PoreGen repo
-  (`~/repos/PoreGen/saveddata/raw/{imperial_college,eleven_sandstones}`). The
-  migration re-points symlinks into `/opt/persistence2/stonedata/` — **zero bytes
-  copied**.
+  holds the raw rock volumes — the public **Imperial College micro-CT dataset**
+  (`scripts/download_imperial_rocks.py` fetches the four reference rocks into
+  `saveddata/raw/imperial_college/`). The generated-data migration re-points
+  symlinks into `/opt/persistence2/stonedata/` — **zero bytes copied**.
 - `notebooks/exploratory/dfn/data/` is the **old** data location and is now
   **disposable** once the symlinks are re-pointed under `saveddata/`. See
   `notebooks/exploratory/dfn/README_STALE.md`.
@@ -23,9 +23,9 @@ the **new canonical `saveddata/` layout** being created in parallel.
 
 ```
 saveddata/
-  raw/                  # EXISTING — symlinks into PoreGen (raw rock refs, uint8 1000^3)
-    imperial_college -> ~/repos/PoreGen/saveddata/raw/imperial_college
-    eleven_sandstones -> ~/repos/PoreGen/saveddata/raw/eleven_sandstones
+  raw/                  # raw rock refs (Imperial College micro-CT, uint8 1000^3)
+    imperial_college/   #   four reference rocks — scripts/download_imperial_rocks.py
+    eleven_sandstones/  #   (legacy extra set, if present)
 
   gp_training/          # GP porosity-field training data (symlinks)
     gpdata4-129/        #   window 129 (production training set)
@@ -100,8 +100,10 @@ savedmodels/
 
 - **`/opt/persistence2/stonedata/`** — the real ~377 GB payload behind every
   `dfn/data` symlink. Survives migration untouched.
-- **`~/repos/PoreGen/`** (sibling repo) — raw `.raw` rock volumes + the SNOW2
-  extractor; on `PYTHONPATH` for any SNOW2 run. Not pip-installed.
+- **Imperial College micro-CT dataset** — the raw `.raw` rock volumes; download
+  via `scripts/download_imperial_rocks.py`. (The SNOW2 pore-network extractor is
+  now vendored into `diffsci2.extra.pore`, so the old `poregen` package is no
+  longer needed on `PYTHONPATH`.)
 - **`/opt/persistence3/chunk_decode_mmap`** — scratch mmap dir for the large
   `0004e --disk-offload` decodes (must exist with ample free space).
 - **`notebooks/exploratory/dfn/data/`** — old location, **disposable** after

@@ -9,3 +9,5 @@ from .morphological_metrics import (
     MeanPoreSizeResult,
     CurvatureResult,
 )
+# Ported from poregen.features (SNOW2 + PNM feature extraction)
+from .snow2 import snow2

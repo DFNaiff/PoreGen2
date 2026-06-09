@@ -31,7 +31,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..'))
 
-from poregen.features.snow2 import snow2  # noqa: E402
+from diffsci2.extra.pore.snow2 import snow2  # noqa: E402
 from diffsci2.extra.pore.permeability_from_pnm import PoreNetworkPermeability  # noqa: E402
 
 

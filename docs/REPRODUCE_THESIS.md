@@ -168,11 +168,13 @@ auto-load `savedmodels/pore/production/<stone>_pcond.ckpt` and need no
 ## Stage 3 — EVALUATION
 
 All evaluators use **pore = 0, solid = 1** in the stored `.npy` (porosity =
-`(1 - volume).mean()`); they flip to pore-space before SNOW2. Reference `.raw`
-volumes come from the hardcoded PoreGen path
-`~/repos/PoreGen/saveddata/raw/imperial_college/`. **`poregen` must be on
-`PYTHONPATH`** whenever SNOW2 actually runs (the `--use-cached-network` path
-avoids it).
+`(1 - volume).mean()`); they flip to pore-space before SNOW2. SNOW2 is now
+**vendored in `diffsci2.extra.pore`** (ported from `poregen`), so no external
+`poregen` is required. Reference `.raw` volumes are the Imperial College rocks;
+legacy scripts still hardcode `DATA_DIR = ~/repos/PoreGen/saveddata/raw/imperial_college/`
+— repoint it to `saveddata/raw/imperial_college/` (downloaded via
+`scripts/download_imperial_rocks.py`). The `--use-cached-network` path skips
+SNOW2 entirely.
 
 ### 3a — Per-cube two-phase metrics (`0005b`, main evaluator)
 ```bash

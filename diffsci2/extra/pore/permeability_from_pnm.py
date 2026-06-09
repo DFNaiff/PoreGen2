@@ -327,7 +327,7 @@ class PoreNetworkPermeability:
             )
 
         try:
-            from poregen.features.snow2 import snow2
+            from .snow2 import snow2
         except ImportError:
             raise ImportError(
                 "poregen is required for network extraction from binary volumes. "
